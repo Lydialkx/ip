@@ -3,15 +3,37 @@ import java.util.Scanner;
 class Task {
     protected String description;
     protected boolean isDone;
+    protected boolean todo;
+    protected boolean deadline;
+    protected boolean event;
 
     public Task(String description) {
         this.description = description;
         this.isDone = false;
+        this.todo = false;
+        this.event = false;
+        this.deadline = false;
+    }
+
+    public String getMarkIcon() {
+        return (isDone ? "X" : " "); // "X" if done, " " if not done
     }
 
     public String getStatusIcon() {
-        return (isDone ? "X" : " "); // "X" if done, " " if not done
+        if (todo){
+            return "T";
+        }
+        else if (deadline){
+            return "D";
+        }
+        else if (event){
+            return "E";
+        }
+        else{
+            return " ";
+        }
     }
+
 
     public void markAsDone() {
         this.isDone = true;
@@ -20,6 +42,19 @@ class Task {
     public void unmarkAsDone() {
         this.isDone = false;
     }
+
+    public void markAstodo() {
+        this.todo = true;
+    }
+
+    public void markAsdeadline() {
+        this.deadline = true;
+    }
+
+    public void markAsevent() {
+        this.event = true;
+    }
+
 }
 
 public class Lyxo {
@@ -54,7 +89,7 @@ public class Lyxo {
                 System.out.println("    ____________________________________________________________");
                 System.out.println("     Here are the tasks in your list:");
                 for (int i = 0; i < count; i++) {
-                    System.out.println("     " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "] " + tasks[i].description);
+                    System.out.println("     " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "][" + tasks[i].getMarkIcon() + "] " + tasks[i].description);
                 }
                 System.out.println("    _____________________________________________________________");
             }
@@ -75,6 +110,45 @@ public class Lyxo {
                     System.out.println("       [ ] " + tasks[taskIndex].description);
                     System.out.println("    _____________________________________________________________");
             }
+
+            else if (command.startsWith("todo")){
+                    String todoname = command.substring(4).trim();
+                    tasks[count] = new Task(todoname);
+                    tasks[count].markAstodo();
+                    System.out.println("    ____________________________________________________________");
+                    System.out.println("     Got it. I've added this task:");
+                    System.out.println("       [T]" + "[" + tasks[count].getMarkIcon() + "] " + todoname);
+                    count ++;
+                    System.out.println("     Now you have " + count +" tasks in the list.");
+            }
+
+            else if (command.startsWith("deadline")){
+                String[] deadlinetask = command.substring(8).trim().split("/");
+                String deadlineby = deadlinetask[1].substring(2).trim();
+                String deadlinename = deadlinetask[0].trim() + " (by: " + deadlineby + ")";
+                tasks[count] = new Task(deadlinename);
+                tasks[count].markAsdeadline();
+                System.out.println("    ____________________________________________________________");
+                System.out.println("     Got it. I've added this task:");
+                System.out.println("       [D]" + "[" + tasks[count].getMarkIcon() + "] " + deadlinename);
+                count ++;
+                System.out.println("     Now you have " + count +" tasks in the list.");
+            }
+
+            else if (command.startsWith("event")){
+                String[] eventtask = command.substring(5).trim().split("/");
+                String eventfrom = eventtask[1].substring(4).trim();
+                String eventto = eventtask[2].substring(2).trim();
+                String eventname = eventtask[0] + " (from: " + eventfrom + " to: " + eventto + ")";
+                tasks[count] = new Task(eventname);
+                tasks[count].markAsevent();
+                System.out.println("    ____________________________________________________________");
+                System.out.println("     Got it. I've added this task:");
+                System.out.println("       [E]" + "[" + tasks[count].getMarkIcon() + "] " + eventname );
+                count ++;
+                System.out.println("     Now you have " + count +" tasks in the list.");
+            }
+
             else {
                     tasks[count] = new Task(command);
                     count++;
