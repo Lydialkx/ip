@@ -154,20 +154,6 @@ public class Lyxo {
                     System.out.println("       [E]" + "[" + tasks[count].getMarkIcon() + "] " + eventname );
                     count ++;
                     System.out.println("     Now you have " + count +" tasks in the list.");
-                } else if (command.startsWith("delete")){
-                    int taskIndex = Integer.parseInt(command.substring(6).trim()) - 1;
-                    if (taskIndex < 0 || taskIndex >= count) {
-                        throw new Exception("Please enter a valid number within the range of 1 to " + count + ".");
-                    }
-                    System.out.println("    ____________________________________________________________");
-                    System.out.println("     Noted. I've removed this task:");
-                    System.out.println("       [" + tasks[taskIndex].getStatusIcon() + "][" + tasks[taskIndex].getMarkIcon() + "] " + tasks[taskIndex].description);
-                    System.out.println("    _____________________________________________________________");
-                    for (int i = taskIndex; i < count - 1; i++) {
-                        tasks[i] = tasks[i + 1];
-                    }
-                    count--;
-                    System.out.println("     Now you have " + count + " tasks in the list.");
                 } else {
                     throw new Exception(
                             "Please enter one of the following valid commands:\n" +
@@ -177,7 +163,6 @@ public class Lyxo {
                                     "4. list  (Displays all tasks)\n" +
                                     "5. mark <task number> (Marks a task as done)\n" +
                                     "6. unmark <task number> (Unmarks a task)\n" +
-                                    "7. delete <task number> (Deletes a task)\n" +
                                     "7. bye  (Exits the program)"
                     );
                 }
