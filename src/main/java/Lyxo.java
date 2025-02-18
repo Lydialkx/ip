@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 class Task {
@@ -59,6 +62,9 @@ class Task {
 
 public class Lyxo {
     public static void main(String[] args) {
+        File file = new File("./data/Lyxo.txt");
+        String filePath = file.getAbsolutePath();
+        file.getParentFile().mkdirs();
         String logo = "  _                 \n"
                 + " | |                \n"
                 + " | |  _   _  _   _ ____ \n"
@@ -80,7 +86,7 @@ public class Lyxo {
 
         while (exit) {
             String command = scanner.nextLine().trim();
-            try{
+            try {
                 if (command.equals("bye")) {
                     System.out.println("    ____________________________________________________________");
                     System.out.println("     Bye. Hope to see you again soon!");
@@ -103,6 +109,7 @@ public class Lyxo {
                     System.out.println("     Nice! I've marked this task as done:");
                     System.out.println("       " + "[" + tasks[taskIndex].getStatusIcon() + "][" + tasks[taskIndex].getMarkIcon() + "] " + tasks[taskIndex].description);
                     System.out.println("    _____________________________________________________________");
+                    changeFile(filePath, tasks, count);
                 } else if (command.startsWith("unmark")) {
                     int taskIndex = Integer.parseInt(command.substring(6).trim()) - 1;
                     if (taskIndex < 0 || taskIndex >= count) {
@@ -113,7 +120,8 @@ public class Lyxo {
                     System.out.println("     OK, I've marked this task as not done yet:");
                     System.out.println("       " + "[" + tasks[taskIndex].getStatusIcon() + "][" + tasks[taskIndex].getMarkIcon() + "] " + tasks[taskIndex].description);
                     System.out.println("    _____________________________________________________________");
-                } else if (command.startsWith("todo")){
+                    changeFile(filePath, tasks, count);
+                } else if (command.startsWith("todo")) {
                     String todoname = command.substring(4).trim();
                     if (todoname.isEmpty()) {
                         throw new Exception("Please enter a valid description of your todo task.");
@@ -123,9 +131,10 @@ public class Lyxo {
                     System.out.println("    ____________________________________________________________");
                     System.out.println("     Got it. I've added this task:");
                     System.out.println("       [T]" + "[" + tasks[count].getMarkIcon() + "] " + todoname);
-                    count ++;
-                    System.out.println("     Now you have " + count +" tasks in the list.");
-                } else if (command.startsWith("deadline")){
+                    count++;
+                    System.out.println("     Now you have " + count + " tasks in the list.");
+                    changeFile(filePath, tasks, count);
+                } else if (command.startsWith("deadline")) {
                     String[] deadlinetask = command.substring(8).trim().split("/");
                     if (deadlinetask.length != 2) {
                         throw new Exception("Please enter your deadline in the format: deadline <task> /by <date>");
@@ -137,9 +146,10 @@ public class Lyxo {
                     System.out.println("    ____________________________________________________________");
                     System.out.println("     Got it. I've added this task:");
                     System.out.println("       [D]" + "[" + tasks[count].getMarkIcon() + "] " + deadlinename);
-                    count ++;
-                    System.out.println("     Now you have " + count +" tasks in the list.");
-                } else if (command.startsWith("event")){
+                    count++;
+                    System.out.println("     Now you have " + count + " tasks in the list.");
+                    changeFile(filePath, tasks, count);
+                } else if (command.startsWith("event")) {
                     String[] eventtask = command.substring(5).trim().split("/");
                     if (eventtask.length != 3) {
                         throw new Exception("Please enter your event task in the format: event <task> /from <start> /to <end>");
@@ -151,9 +161,10 @@ public class Lyxo {
                     tasks[count].markAsevent();
                     System.out.println("    ____________________________________________________________");
                     System.out.println("     Got it. I've added this task:");
-                    System.out.println("       [E]" + "[" + tasks[count].getMarkIcon() + "] " + eventname );
-                    count ++;
-                    System.out.println("     Now you have " + count +" tasks in the list.");
+                    System.out.println("       [E]" + "[" + tasks[count].getMarkIcon() + "] " + eventname);
+                    count++;
+                    System.out.println("     Now you have " + count + " tasks in the list.");
+                    changeFile(filePath, tasks, count);
                 } else {
                     throw new Exception(
                             "Please enter one of the following valid commands:\n" +
@@ -167,11 +178,22 @@ public class Lyxo {
                     );
                 }
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("    ____________________________________________________________");
                 System.out.println("     ERROR: " + e.getMessage());
                 System.out.println("    _____________________________________________________________");
             }
         }
+    }
+
+    private static void changeFile(String filePath, Task[] tasks, int count) throws IOException {
+        FileWriter fw = new FileWriter(filePath);
+        for (int i = 0; i < count; i++) {
+            String type = tasks[i].getStatusIcon();
+            String done = tasks[i].isDone ? "1" : "0";
+            String description = tasks[i].description;
+            fw.write(type + " | " + done + " | " + description + System.lineSeparator());
+        }
+        fw.close();
     }
 }
