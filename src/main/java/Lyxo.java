@@ -1,70 +1,13 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-class Task {
-    protected String description;
-    protected boolean isDone;
-    protected boolean todo;
-    protected boolean deadline;
-    protected boolean event;
-
-    public Task(String description) {
-        this.description = description;
-        this.isDone = false;
-        this.todo = false;
-        this.event = false;
-        this.deadline = false;
-    }
-
-    public String getMarkIcon() {
-        return (isDone ? "X" : " "); // "X" if done, " " if not done
-    }
-
-    public String getStatusIcon() {
-        if (todo){
-            return "T";
-        }
-        else if (deadline){
-            return "D";
-        }
-        else if (event){
-            return "E";
-        }
-        else{
-            return " ";
-        }
-    }
-
-
-    public void markAsDone() {
-        this.isDone = true;
-    }
-
-    public void unmarkAsDone() {
-        this.isDone = false;
-    }
-
-    public void markAstodo() {
-        this.todo = true;
-    }
-
-    public void markAsdeadline() {
-        this.deadline = true;
-    }
-
-    public void markAsevent() {
-        this.event = true;
-    }
-
-}
-
 public class Lyxo {
+    private static final String filePath = "data/Lyxo.txt";
+
     public static void main(String[] args) {
-        File file = new File("./data/Lyxo.txt");
-        String filePath = file.getAbsolutePath();
-        file.getParentFile().mkdirs();
         String logo = "  _                 \n"
                 + " | |                \n"
                 + " | |  _   _  _   _ ____ \n"
@@ -82,7 +25,7 @@ public class Lyxo {
         Scanner scanner = new Scanner(System.in);
         boolean exit = true;
         Task[] tasks = new Task[100];
-        int count = 0;
+        int count = loadTasks(filePath, tasks);
 
         while (exit) {
             String command = scanner.nextLine().trim();
@@ -148,6 +91,7 @@ public class Lyxo {
                     System.out.println("       [T]" + "[" + tasks[count].getMarkIcon() + "] " + todoname);
                     count++;
                     System.out.println("     Now you have " + count + " tasks in the list.");
+                    System.out.println("    ____________________________________________________________");
                     changeFile(filePath, tasks, count);
                 } else if (command.startsWith("deadline")) {
                     String[] deadlinetask = command.substring(8).trim().split("/");
@@ -163,6 +107,7 @@ public class Lyxo {
                     System.out.println("       [D]" + "[" + tasks[count].getMarkIcon() + "] " + deadlinename);
                     count++;
                     System.out.println("     Now you have " + count + " tasks in the list.");
+                    System.out.println("    ____________________________________________________________");
                     changeFile(filePath, tasks, count);
                 } else if (command.startsWith("event")) {
                     String[] eventtask = command.substring(5).trim().split("/");
@@ -179,6 +124,7 @@ public class Lyxo {
                     System.out.println("       [E]" + "[" + tasks[count].getMarkIcon() + "] " + eventname);
                     count++;
                     System.out.println("     Now you have " + count + " tasks in the list.");
+                    System.out.println("    ____________________________________________________________");
                     changeFile(filePath, tasks, count);
                 } else {
                     throw new Exception(
@@ -202,14 +148,44 @@ public class Lyxo {
         }
     }
 
-    private static void changeFile(String filePath, Task[] tasks, int count) throws IOException {
-        FileWriter fw = new FileWriter(filePath);
-        for (int i = 0; i < count; i++) {
-            String type = tasks[i].getStatusIcon();
-            String done = tasks[i].isDone ? "1" : "0";
-            String description = tasks[i].description;
-            fw.write(type + " | " + done + " | " + description + System.lineSeparator());
+    private static void changeFile(String filePath, Task[] tasks, int count) {
+        try {
+            File file = new File(filePath);
+            file.getParentFile().mkdirs();
+            FileWriter fw = new FileWriter(file);
+            for (int i = 0; i < count; i++) {
+                fw.write(tasks[i].getStatusIcon() + " | " + (tasks[i].isDone ? "1" : "0") + " | " + tasks[i].description + System.lineSeparator());
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("     ERROR: Unable to save tasks.");
         }
-        fw.close();
+    }
+
+    private static int loadTasks(String filePath, Task[] tasks) {
+        int count = 0;
+        File file = new File(filePath);
+        if (!file.exists()) return 0;
+
+        try (Scanner fileScanner = new Scanner(file)) {
+            while (fileScanner.hasNextLine()) {
+                String[] parts = fileScanner.nextLine().split(" | ");
+                if (parts.length < 3) {
+                    System.out.println("     ERROR: Corrupted task data, skipping entry.");
+                    continue;
+                }
+                boolean isDone = parts[1].equals("1");
+                String description = parts[2];
+                tasks[count] = new Task(description);
+                if (parts[0].equals("T")) tasks[count].markAstodo();
+                if (parts[0].equals("D")) tasks[count].markAsdeadline();
+                if (parts[0].equals("E")) tasks[count].markAsevent();
+                if (isDone) tasks[count].markAsDone();
+                count++;
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("     ERROR: File not found, starting fresh.");
+        }
+        return count;
     }
 }
