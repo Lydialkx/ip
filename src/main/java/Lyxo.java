@@ -99,6 +99,21 @@ public class Lyxo {
                         System.out.println("     " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "][" + tasks[i].getMarkIcon() + "] " + tasks[i].description);
                     }
                     System.out.println("    _____________________________________________________________");
+                } else if (command.startsWith("delete")) {
+                    int taskIndex = Integer.parseInt(command.substring(6).trim()) - 1;
+                    if (taskIndex < 0 || taskIndex >= count) {
+                        throw new Exception("Please enter a valid number within the range of 1 to " + count + ".");
+                    }
+                    System.out.println("    ____________________________________________________________");
+                    System.out.println("     Noted. I've removed this task:");
+                    System.out.println("       [" + tasks[taskIndex].getStatusIcon() + "][" + tasks[taskIndex].getMarkIcon() + "] " + tasks[taskIndex].description);
+                    System.out.println("    _____________________________________________________________");
+                    for (int i = taskIndex; i < count - 1; i++) {
+                        tasks[i] = tasks[i + 1];
+                    }
+                    tasks[count - 1] = null;
+                    count--;
+                    changeFile(filePath, tasks, count);
                 } else if (command.startsWith("mark")) {
                     int taskIndex = Integer.parseInt(command.substring(4).trim()) - 1;
                     if (taskIndex < 0 || taskIndex >= count) {
@@ -172,9 +187,10 @@ public class Lyxo {
                                     "2. deadline <task description> /by <due date>\n" +
                                     "3. event <task description> /from <start time> /to <end time>\n" +
                                     "4. list  (Displays all tasks)\n" +
-                                    "5. mark <task number> (Marks a task as done)\n" +
-                                    "6. unmark <task number> (Unmarks a task)\n" +
-                                    "7. bye  (Exits the program)"
+                                    "5. delete <task number> (Deletes a task)\n" +
+                                    "6. mark <task number> (Marks a task as done)\n" +
+                                    "7. unmark <task number> (Unmarks a task)\n" +
+                                    "8. bye  (Exits the program)"
                     );
                 }
 
