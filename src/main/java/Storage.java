@@ -8,13 +8,24 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Handles storage-related operations such as loading and saving tasks.
+ */
 class Storage {
     private String filePath;
 
+    /**
+     * Constructs a Storage object with the specified file path.
+     *  @param filePath The file path to store and retrieve tasks.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Loads tasks from the storage file.
+     * @return tasks retrieved from the file.
+     */
     public ArrayList<Task> load() {
         ArrayList<Task> tasks = new ArrayList<>();
         File file = new File(filePath);
@@ -72,6 +83,11 @@ class Storage {
         return tasks;
     }
 
+    /**
+     * Formats a date or datetime string into a standardized format.
+     * @param dateTime The input date string.
+     * @return Formatted date string.
+     */
     private String formatDateTime(String dateTime) {
         try {
             if (dateTime.matches("\\d{4}-\\d{2}-\\d{2}")) {
@@ -87,6 +103,10 @@ class Storage {
         return dateTime;
     }
 
+    /**
+     * Saves the current list of tasks to the file.
+     * @param tasks The TaskList with tasks to be saved.
+     */
     public void save(TaskList tasks) {
         try (FileWriter fw = new FileWriter(filePath)) {
             for (Task task : tasks.getTasks()) {
@@ -97,6 +117,11 @@ class Storage {
         }
     }
 
+    /**
+     * Converts a Task object to store into the file.
+     * @param task The task to format.
+     * @return Formatted string representation of the task.
+     */
     private String taskToFileFormat(Task task) {
         String doneStatus = task.isDone ? "1" : "0";
 

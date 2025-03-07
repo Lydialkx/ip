@@ -4,17 +4,32 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
+/**
+ * Manages the list of tasks and provides detailed operation methods.
+ */
 class TaskList {
+    /**
+     * Constructs an empty TaskList.
+     */
     private ArrayList<Task> tasks;
 
     public TaskList() {
         tasks = new ArrayList<>();
     }
 
+    /**
+     * Constructs a TaskList with existing tasks.
+     * @param tasks A list of existing tasks.
+     */
     public TaskList(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
 
+    /**
+     * Adds a task to the list and formats dates or time for deadline and event commands.
+     * @param task The task to be added.
+     * @param ui The UI instance to show all messages.
+     */
     public void addTask(Task task, Ui ui) {
         tasks.add(task);
         ui.showMessage("Got it. I've added this task:");
@@ -32,6 +47,11 @@ class TaskList {
         ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
     }
 
+    /**
+     * Deletes one specific task from the list.
+     * @param index The index of the task to be deleted.
+     * @param ui The UI instance to show all messages.
+     */
     public void deleteTask(int index, Ui ui) {
         if (index >= 0 && index < tasks.size()) {
             Task removedTask = tasks.remove(index);
@@ -43,6 +63,12 @@ class TaskList {
         }
     }
 
+    /**
+     * Marks a task as done or not done.
+     * @param index The index of the task.
+     * @param isDone The status to mark the task.
+     * @param ui The UI instance to show all messages.
+     */
     public void markTask(int index, boolean isDone, Ui ui) {
         if (index >= 0 && index < tasks.size()) {
             Task task = tasks.get(index);
@@ -59,7 +85,10 @@ class TaskList {
         }
     }
 
-
+    /**
+     * Prints all tasks in the list.
+     * @param ui The UI instance to show all messages.
+     */
     public void printTasks(Ui ui) {
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i) instanceof TodoTask) {
@@ -77,11 +106,16 @@ class TaskList {
         }
     }
 
-    public void findTasks(String keyword, Ui ui) {
+    /**
+     * Finds tasks based on the searching string.
+     * @param name The string to search for.
+     * @param ui The UI instance to show messages.
+     */
+    public void findTasks(String name, Ui ui) {
         ui.showMessage("Here are the matching tasks in your list:");
         int count = 1;
         for (Task task : tasks) {
-            if (task.description.contains(keyword)) {
+            if (task.description.contains(name)) {
                 if (task instanceof TodoTask) {
                     ui.showMessage(count + ".[" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description);
                 }
@@ -105,10 +139,19 @@ class TaskList {
         return tasks.size();
     }
 
+    /**
+     * Retrieves the list of tasks.
+     * @return The list of tasks.
+     */
     public ArrayList<Task> getTasks() {
         return tasks;
     }
 
+    /**
+     * Formats the date or time of one specific task for better display.
+     * @param dateTime The date or time of the task to format.
+     * @return The formatted task string.
+     */
     private String formatDateTime(String dateTime) {
         try {
             if (dateTime.matches("\\d{4}-\\d{2}-\\d{2}")) {

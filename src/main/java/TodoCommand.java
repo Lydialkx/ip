@@ -1,6 +1,13 @@
+/**
+ * Represents a command to add a task with no dates or time.
+ */
 public class TodoCommand extends Command {
     private String description;
 
+    /**
+     * Constructs a TodoCommand.
+     * @param description The task description.
+     */
     public TodoCommand(String description) {
         this.description = description;
     }

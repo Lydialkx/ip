@@ -3,10 +3,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class Parser {
+/**
+ * Parses user commands and returns the corresponding Command object.
+ */
+class Parser {
+    /**
+     * Parses user input and returns the corresponding command.
+     *
+     * @param command The user input command.
+     * @return The corresponding Command object.
+     * @throws IllegalArgumentException If the command format is invalid.
+     */
     public static Command parse(String command) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         try {
             if (command.equals("bye")) {
                 return new ExitCommand();
@@ -30,7 +38,8 @@ public class Parser {
                     throw new IllegalArgumentException("Please enter a valid task number.");
                 }
                 return new DeleteCommand(Integer.parseInt(number) - 1);
-            } else if (command.startsWith("todo")) {
+            }
+            else if (command.startsWith("todo")) {
                 String todoName = command.substring(4).trim();
                 if (todoName.isEmpty()) {
                     throw new IllegalArgumentException("Please enter a valid description of your todo task.");
