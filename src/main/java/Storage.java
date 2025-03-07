@@ -3,6 +3,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 class Storage {
     private String filePath;
@@ -28,7 +32,7 @@ class Storage {
         try (Scanner fileScanner = new Scanner(file)) {
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
-                String[] parts = line.split(" \\| "); // Fixed illegal escape character
+                String[] parts = line.split(" \\| ");
 
                 if (parts.length < 3) {
                     System.out.println("Skipping corrupted task entry: " + line);
@@ -44,7 +48,7 @@ class Storage {
                         break;
                     case "D":
                         if (parts.length < 4) continue;
-                        task = new DeadlineTask(parts[2], parts[3]);
+                        task = new DeadlineTask(parts[2], formatDateTime(parts[3]));
                         break;
                     case "E":
                         if (parts.length < 4) continue;
@@ -68,6 +72,21 @@ class Storage {
         return tasks;
     }
 
+    private String formatDateTime(String dateTime) {
+        try {
+            if (dateTime.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                LocalDate parsedDate = LocalDate.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                return parsedDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
+            } else if (dateTime.matches("\\d{4}-\\d{2}-\\d{2} \\d{4}")) {
+                LocalDateTime parsedDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm"));
+                return parsedDateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a"));
+            }
+        } catch (DateTimeParseException e) {
+            return dateTime;
+        }
+        return dateTime;
+    }
+
     public void save(TaskList tasks) {
         try (FileWriter fw = new FileWriter(filePath)) {
             for (Task task : tasks.getTasks()) {
@@ -85,10 +104,10 @@ class Storage {
             return "T | " + doneStatus + " | " + task.description;
         } else if (task instanceof DeadlineTask) {
             DeadlineTask deadlineTask = (DeadlineTask) task;
-            return "D | " + doneStatus + " | " + deadlineTask.description + " | " + deadlineTask.by;
+            return "D | " + doneStatus + " | " + deadlineTask.description + " | " + formatDateTime(deadlineTask.by);
         } else if (task instanceof EventTask) {
             EventTask eventTask = (EventTask) task;
-            return "E | " + doneStatus + " | " + eventTask.description + " | " + eventTask.from + "-" + eventTask.to;
+            return "E | " + doneStatus + " | " + eventTask.description + " | " + formatDateTime(eventTask.from) + " - " + formatDateTime(eventTask.to);
         }
         return "";
     }

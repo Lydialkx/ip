@@ -1,3 +1,7 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 class TaskList {
@@ -7,7 +11,6 @@ class TaskList {
         tasks = new ArrayList<>();
     }
 
-    // New Constructor to Accept Preloaded Tasks
     public TaskList(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
@@ -20,11 +23,11 @@ class TaskList {
         }
         if (task instanceof DeadlineTask) {
             DeadlineTask deadlineTask = (DeadlineTask) task;
-            ui.showMessage("  [" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description + " (by: " + deadlineTask.by + ")");
+            ui.showMessage("  [" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description + " (by: " + formatDateTime(deadlineTask.by) + ")");
         }
         if (task instanceof EventTask) {
             EventTask eventTask = (EventTask) task;
-            ui.showMessage("  [" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description + " (from: " + eventTask.from + " to: " + eventTask.to + ")");
+            ui.showMessage("  [" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description + " (from: " + formatDateTime(eventTask.from) + " to: " + formatDateTime(eventTask.to) + ")");
         }
         ui.showMessage("Now you have " + tasks.size() + " tasks in the list.");
     }
@@ -64,11 +67,11 @@ class TaskList {
             }
             if (tasks.get(i) instanceof DeadlineTask) {
                 DeadlineTask deadlineTask = (DeadlineTask) tasks.get(i);
-                ui.showMessage((i + 1) + ".[" + tasks.get(i).getStatusIcon() + "][" + tasks.get(i).getMarkIcon() + "] " + tasks.get(i).description + " (by: " + deadlineTask.by + ")");
+                ui.showMessage((i + 1) + ".[" + tasks.get(i).getStatusIcon() + "][" + tasks.get(i).getMarkIcon() + "] " + tasks.get(i).description + " (by: " + formatDateTime(deadlineTask.by) + ")");
             }
             if (tasks.get(i) instanceof EventTask) {
                 EventTask eventTask = (EventTask) tasks.get(i);
-                ui.showMessage((i + 1) + ".[" + tasks.get(i).getStatusIcon() + "][" + tasks.get(i).getMarkIcon() + "] " + tasks.get(i).description + " (from: " + eventTask.from + " to: " + eventTask.to + ")");
+                ui.showMessage((i + 1) + ".[" + tasks.get(i).getStatusIcon() + "][" + tasks.get(i).getMarkIcon() + "] " + tasks.get(i).description + " (from: " + formatDateTime(eventTask.from) + " to: " + formatDateTime(eventTask.to) + ")");
             }
 
         }
@@ -80,5 +83,20 @@ class TaskList {
 
     public ArrayList<Task> getTasks() {
         return tasks;
+    }
+
+    private String formatDateTime(String dateTime) {
+        try {
+            if (dateTime.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                LocalDate parsedDate = LocalDate.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                return parsedDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
+            } else if (dateTime.matches("\\d{4}-\\d{2}-\\d{2} \\d{4}")) {
+                LocalDateTime parsedDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm"));
+                return parsedDateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a"));
+            }
+        } catch (DateTimeParseException e) {
+            return dateTime;
+        }
+        return dateTime;
     }
 }
