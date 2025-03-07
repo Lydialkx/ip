@@ -77,6 +77,30 @@ class TaskList {
         }
     }
 
+    public void findTasks(String keyword, Ui ui) {
+        ui.showMessage("Here are the matching tasks in your list:");
+        int count = 1;
+        for (Task task : tasks) {
+            if (task.description.contains(keyword)) {
+                if (task instanceof TodoTask) {
+                    ui.showMessage(count + ".[" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description);
+                }
+                if (task instanceof DeadlineTask) {
+                    DeadlineTask deadlineTask = (DeadlineTask) task;
+                    ui.showMessage(count + ".[" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description + " (by: " + formatDateTime(deadlineTask.by) + ")");
+                }
+                if (task instanceof EventTask) {
+                    EventTask eventTask = (EventTask) task;
+                    ui.showMessage(count + ".[" + task.getStatusIcon() + "][" + task.getMarkIcon() + "] " + task.description + " (from: " + formatDateTime(eventTask.from) + " to: " + formatDateTime(eventTask.to) + ")");
+                }
+                count++;
+            }
+        }
+        if (count == 1) {
+            ui.showMessage("No matching tasks found.");
+        }
+    }
+
     public int size() {
         return tasks.size();
     }

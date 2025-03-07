@@ -31,11 +31,11 @@ public class Parser {
                 }
                 return new DeleteCommand(Integer.parseInt(number) - 1);
             } else if (command.startsWith("todo")) {
-                String todoname = command.substring(4).trim();
-                if (todoname.isEmpty()) {
+                String todoName = command.substring(4).trim();
+                if (todoName.isEmpty()) {
                     throw new IllegalArgumentException("Please enter a valid description of your todo task.");
                 }
-                return new TodoCommand(todoname);
+                return new TodoCommand(todoName);
             } else if (command.startsWith("deadline")) {
                 String[] deadlinetask = command.substring(8).trim().split("/\\s*by");
                 if (deadlinetask.length != 2) {
@@ -59,6 +59,12 @@ public class Parser {
                     throw new IllegalArgumentException("Invalid date format! Use 'yyyy-MM-dd' (e.g., 2023-09-15) or 'yyyy-MM-dd HHmm' (e.g., 2023-09-15 1400)");
                 }
                 return new EventCommand(eventname, eventfrom, eventto);
+            } else if (command.startsWith("find")) {
+                String findName = command.substring(4).trim();
+                if (findName.isEmpty()) {
+                    throw new IllegalArgumentException("Please provide a keyword to search.");
+                }
+                return new FindCommand(findName);
             } else {
                 return new UnknownCommand();
             }
