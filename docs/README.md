@@ -1,8 +1,8 @@
 # Lyxo User Guide
 
-![Lyxo Screenshot](https://your-image-url.com)
-
 ##  **About Lyxo**
+
+<img width="580" alt="Screenshot 2025-03-10 at 11 29 14" src="https://github.com/user-attachments/assets/f9963748-59f2-4077-b089-bd6c641ed038" />
 
 Lyxo is a simple and interactive chatbot that helps users manage tasks efficiently. It supports adding todos, deadlines, and events, as well as marking, unmarking, deleting, and finding tasks. Users can interact with Lyxo through a command-line interface to manage tasks.
 
